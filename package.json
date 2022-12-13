@@ -2,13 +2,16 @@
 	"name": "backend-cashier",
 	"version": "0.0.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
-		"start": "node ./bin/www"
+		"start": "node ./app.js"
 	},
 	"dependencies": {
 		"cookie-parser": "~1.4.4",
 		"debug": "~2.6.9",
-		"express": "~4.16.1",
+		"dotenv": "^16.0.3",
+		"express": "^4.18.2",
+		"mongoose": "^6.2.4",
 		"morgan": "~1.9.1"
 	}
 }
