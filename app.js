@@ -3,6 +3,7 @@ import express from "express";
 import dotenv from "dotenv";
 import indexRouter from "./routes/index.js";
 import mongoose from "mongoose";
+import cors from "cors";
 
 var app = express();
 const env = dotenv.config().parsed;
@@ -10,6 +11,11 @@ const env = dotenv.config().parsed;
 // app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(
+	cors({
+		origin: "*",
+	}),
+);
 
 app.use("/", indexRouter);
 
