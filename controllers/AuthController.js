@@ -58,4 +58,42 @@ const register = async (req, res) => {
 	}
 };
 
-export { register };
+const login = async (req, res) => {
+	try {
+		// jika beberapa field ada yang kosong
+		if (!req.body.email) {
+			throw { code: 428, message: "Email is required!" };
+		}
+		if (!req.body.password) {
+			throw { code: 428, message: "password is required!" };
+		}
+
+		// jika email sudah terdaftar
+		const User = await user.findOne({ email: req.body.email });
+		if (!User) {
+			throw { code: 404, message: "EMAIL_NOT_FOUND" };
+		}
+
+		// jika password match
+		const isMatch = await bcrypt.compareSync(req.body.password, User.password);
+		if (!isMatch) {
+			throw { code: 428, message: "PASSWORD_WRONG" };
+		}
+
+		return res.status(200).json({
+			status: true,
+			message: "USER_LOGIN_SUCCESS",
+			User,
+		});
+	} catch (err) {
+		if (!err.code) {
+			err.code = 500;
+		}
+		return res.status(err.code).json({
+			status: false,
+			message: err.message,
+		});
+	}
+};
+
+export { register, login };
