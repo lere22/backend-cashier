@@ -114,4 +114,39 @@ const login = async (req, res) => {
 	}
 };
 
-export { register, login };
+const accessToken = async (req, res) => {
+	try {
+		// jika beberapa field ada yang kosong
+		if (!req.body.accessToken) {
+			throw { code: 428, message: "Access Token is required!" };
+		}
+
+		// verify token
+		const verifyToken = await jsonwebtoken.verify(req.body.accessToken, env.JWT_ACCESS_TOKEN_SECRET);
+		if (!verifyToken) {
+			throw { code: 401, message: "ACCESS_TOKEN_INVALID" };
+		}
+
+		// regenerate token
+		let payload = { _id: verifyToken._id, role: verifyToken.role };
+		const accessToken = await generateAccessToken(payload);
+		const refreshToken = await generateRefreshToken(payload);
+
+		return res.status(200).json({
+			status: true,
+			message: "ACCESS_TOKEN_SUCCESS",
+			accessToken,
+			refreshToken,
+		});
+	} catch (err) {
+		if (!err.code) {
+			err.code = 500;
+		}
+		return res.status(err.code).json({
+			status: false,
+			message: err.message,
+		});
+	}
+};
+
+export { register, login, accessToken };
