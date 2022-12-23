@@ -13,6 +13,36 @@ const generateRefreshToken = async (payload) => {
 	return jsonwebtoken.sign(payload, env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: env.JWT_REFRESH_TOKEN_LIFE });
 };
 
+const isEmailExist = async (email) => {
+	const User = await user.findOne({ email });
+	if (!User) {
+		return false;
+	}
+	return true;
+};
+
+// endpoint untuk mengecek dari sisi Frontend
+const checkEmail = async (req, res) => {
+	try {
+		// jika email sudah terdaftar
+		const email = await isEmailExist(req.body.email);
+		if (email) {
+			throw { code: 409, message: "EMAIL_EXIST" };
+		}
+
+		// email berhasil dicek
+		res.status(200).json({
+			status: true,
+			message: "EMAIL_NOT_EXIST",
+		});
+	} catch (err) {
+		res.status(err.code).json({
+			status: false,
+			message: err.message,
+		});
+	}
+};
+
 const register = async (req, res) => {
 	try {
 		// jika beberapa field ada yang kosong
@@ -32,7 +62,7 @@ const register = async (req, res) => {
 		}
 
 		// jika email sudah terdaftar
-		const email = await user.findOne({ email: req.body.email });
+		const email = await isEmailExist(req.body.email);
 		if (email) {
 			throw { code: 409, message: "EMAIL_EXIST" };
 		}
@@ -149,4 +179,4 @@ const accessToken = async (req, res) => {
 	}
 };
 
-export { register, login, accessToken };
+export { register, login, accessToken, checkEmail };
