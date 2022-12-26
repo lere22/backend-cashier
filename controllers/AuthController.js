@@ -113,13 +113,13 @@ const login = async (req, res) => {
 		// jika email sudah terdaftar
 		const User = await user.findOne({ email: req.body.email });
 		if (!User) {
-			throw { code: 404, message: "EMAIL_NOT_FOUND" };
+			throw { code: 403, message: "EMAIL_NOT_FOUND" };
 		}
 
 		// jika password match
 		const isMatch = await bcrypt.compareSync(req.body.password, User.password);
 		if (!isMatch) {
-			throw { code: 428, message: "PASSWORD_WRONG" };
+			throw { code: 403, message: "WRONG_PASSWORD" };
 		}
 
 		// generate token
