@@ -58,7 +58,7 @@ const register = async (req, res) => {
 
 		// jika password tidak match
 		if (req.body.password !== req.body.retype_password) {
-			throw { code: 428, message: "PASSWORD_MUST_MATCH" };
+			throw { code: 428, message: "PASSWORD_NOT_MATCH" };
 		}
 
 		// jika email sudah terdaftar
@@ -75,7 +75,6 @@ const register = async (req, res) => {
 			fullname: req.body.fullname,
 			email: req.body.email,
 			password: hash,
-			role: req.body.role,
 		});
 		const saveUser = await newUser.save();
 
