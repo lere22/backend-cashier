@@ -130,6 +130,7 @@ const login = async (req, res) => {
 		return res.status(200).json({
 			status: true,
 			message: "USER_LOGIN_SUCCESS",
+			fullname: User.fullname,
 			accessToken,
 			refreshToken,
 		});
