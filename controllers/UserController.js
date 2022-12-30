@@ -2,13 +2,18 @@ import user from "../models/User.js";
 
 const index = async (req, res) => {
 	try {
-		const users = await user.paginate(
-			{},
-			{
-				page: req.query.page || 1,
-				limit: req.query.limit || 10,
-			},
-		);
+		// search option
+		let search = {
+			fullname: { $regex: `^${req.query.search}`, $options: "i" },
+		};
+
+		// pagination & total limit page option
+		let optionsPagination = {
+			page: req.query.page || 1,
+			limit: req.query.limit || 10,
+		};
+
+		const users = await user.paginate(search, optionsPagination);
 
 		// jika data user tidak ada
 		if (!users) {
