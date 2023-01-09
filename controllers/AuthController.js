@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
 
+// libraries
+import isEmailExist from "../libraries/isEmailExist.js";
+
 const env = dotenv.config().parsed;
 
 const generateAccessToken = async (payload) => {
@@ -11,14 +14,6 @@ const generateAccessToken = async (payload) => {
 
 const generateRefreshToken = async (payload) => {
 	return jsonwebtoken.sign(payload, env.JWT_REFRESH_TOKEN_SECRET, { expiresIn: env.JWT_REFRESH_TOKEN_LIFE });
-};
-
-const isEmailExist = async (email) => {
-	const User = await user.findOne({ email });
-	if (!User) {
-		return false;
-	}
-	return true;
 };
 
 // endpoint untuk mengecek dari sisi Frontend
