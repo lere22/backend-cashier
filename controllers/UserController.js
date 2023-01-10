@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 // libraries
 import { isEmailExist, isEmailExistWithUserId } from "../libraries/isEmailExist.js";
 
+// show all data user
 const index = async (req, res) => {
 	try {
 		// search option
@@ -17,20 +18,20 @@ const index = async (req, res) => {
 			limit: req.query.limit || 10,
 		};
 
-		const users = await user.paginate(search, optionsPagination);
+		const User = await user.paginate(search, optionsPagination);
 
 		// jika data user tidak ada
-		if (!users) {
+		if (!User) {
 			throw {
-				code: 500,
-				message: "Get all item in users failed",
+				code: 404,
+				message: "USER_NOT_FOUND",
 			};
 		}
 
 		return res.status(200).json({
 			status: true,
-			total: users.length,
-			users,
+			total: User.length,
+			User,
 		});
 	} catch (err) {
 		if (!err.code) {
@@ -43,6 +44,7 @@ const index = async (req, res) => {
 	}
 };
 
+// add new user to database
 const store = async (req, res) => {
 	try {
 		// jika beberapa field ada yang kosong
@@ -103,6 +105,41 @@ const store = async (req, res) => {
 	}
 };
 
+// show user data by id
+const edit = async (req, res) => {
+	try {
+		// check id in params
+		if (!req.params.id) {
+			throw { code: 428, message: "ID is required" };
+		}
+
+		const User = await user.findById(req.params.id);
+
+		// jika data user tidak ada
+		if (!User) {
+			throw {
+				code: 404,
+				message: "USER_NOT_FOUND",
+			};
+		}
+
+		return res.status(200).json({
+			status: true,
+			total: User.length,
+			user: User,
+		});
+	} catch (err) {
+		if (!err.code) {
+			err.code = 500;
+		}
+		return res.status(err.code).json({
+			status: false,
+			message: err.message,
+		});
+	}
+};
+
+// update user in database by id
 const update = async (req, res) => {
 	try {
 		// jika beberapa field ada yang kosong
@@ -163,4 +200,4 @@ const update = async (req, res) => {
 	}
 };
 
-export { index, store, update };
+export { index, store, update, edit };
