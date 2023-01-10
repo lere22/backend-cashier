@@ -2,7 +2,7 @@ import user from "../models/User.js";
 import bcrypt from "bcrypt";
 
 // libraries
-import isEmailExist from "../libraries/isEmailExist.js";
+import { isEmailExist, isEmailExistWithUserId } from "../libraries/isEmailExist.js";
 
 const index = async (req, res) => {
 	try {
@@ -122,7 +122,7 @@ const update = async (req, res) => {
 		}
 
 		// jika email sudah terdaftar
-		const email = await isEmailExist(req.body.email);
+		const email = await isEmailExistWithUserId(req.params.id, req.body.email);
 		if (email) {
 			throw { code: 409, message: "EMAIL_EXIST" };
 		}

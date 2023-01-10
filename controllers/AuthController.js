@@ -4,7 +4,7 @@ import jsonwebtoken from "jsonwebtoken";
 import dotenv from "dotenv";
 
 // libraries
-import isEmailExist from "../libraries/isEmailExist.js";
+import { isEmailExist } from "../libraries/isEmailExist.js";
 
 const env = dotenv.config().parsed;
 
