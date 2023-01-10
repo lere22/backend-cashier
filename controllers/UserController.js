@@ -31,7 +31,7 @@ const index = async (req, res) => {
 		return res.status(200).json({
 			status: true,
 			total: User.length,
-			User,
+			users: User,
 		});
 	} catch (err) {
 		if (!err.code) {
