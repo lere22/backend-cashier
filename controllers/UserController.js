@@ -142,6 +142,10 @@ const edit = async (req, res) => {
 // update user in database by id
 const update = async (req, res) => {
 	try {
+		// check id in params
+		if (!req.params.id) {
+			throw { code: 428, message: "ID is required" };
+		}
 		// jika beberapa field ada yang kosong
 		if (!req.body.fullname) {
 			throw { code: 428, message: "Fullname is required!" };
@@ -200,4 +204,36 @@ const update = async (req, res) => {
 	}
 };
 
-export { index, store, update, edit };
+// destroy user in database by id
+const destroy = async (req, res) => {
+	try {
+		// check id in params
+		if (!req.params.id) {
+			throw { code: 428, message: "ID is required" };
+		}
+
+		// delete user
+		const deleteUser = await user.findByIdAndDelete(req.params.id);
+
+		// jika category gagal ditambahkan
+		if (!deleteUser) {
+			throw { code: 500, message: "USER_DELETE_FAILED" };
+		}
+
+		return res.status(200).json({
+			status: true,
+			message: "USER_DELETE_SUCCESS",
+			deleteUser,
+		});
+	} catch (err) {
+		if (!err.code) {
+			err.code = 500;
+		}
+		return res.status(err.code).json({
+			status: false,
+			message: err.message,
+		});
+	}
+};
+
+export { index, store, update, edit, destroy };
