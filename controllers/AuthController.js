@@ -147,10 +147,10 @@ const refreshToken = async (req, res) => {
 		}
 
 		// verify token
-		const verifyToken = await jsonwebtoken.verify(req.body.refreshToken, env.JWT_REFRESH_TOKEN_SECRET);
+		const verify = await jsonwebtoken.verify(req.body.refreshToken, env.JWT_REFRESH_TOKEN_SECRET);
 
 		// regenerate token
-		let payload = { id: verifyToken.id, role: verifyToken.role };
+		let payload = { id: verify.id, role: verify.role };
 		const accessToken = await generateAccessToken(payload);
 		const refreshToken = await generateRefreshToken(payload);
 
@@ -165,6 +165,9 @@ const refreshToken = async (req, res) => {
 			err.message = "REFRESH_TOKEN_EXPIRED";
 		} else {
 			err.message = "REFRESH_TOKEN_INVALID";
+		}
+		if (!err.code) {
+			err.code = 500;
 		}
 		return res.status(err.code).json({
 			status: false,
