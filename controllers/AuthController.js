@@ -139,33 +139,32 @@ const login = async (req, res) => {
 	}
 };
 
-const accessToken = async (req, res) => {
+const refreshToken = async (req, res) => {
 	try {
 		// jika beberapa field ada yang kosong
-		if (!req.body.accessToken) {
-			throw { code: 428, message: "Access Token is required!" };
+		if (!req.body.refreshToken) {
+			throw { code: 428, message: "REFRESH_TOKEN_REQUIRED" };
 		}
 
 		// verify token
-		const verifyToken = await jsonwebtoken.verify(req.body.accessToken, env.JWT_ACCESS_TOKEN_SECRET);
-		if (!verifyToken) {
-			throw { code: 401, message: "ACCESS_TOKEN_INVALID" };
-		}
+		const verifyToken = await jsonwebtoken.verify(req.body.refreshToken, env.JWT_REFRESH_TOKEN_SECRET);
 
 		// regenerate token
-		let payload = { _id: verifyToken._id, role: verifyToken.role };
+		let payload = { id: verifyToken.id, role: verifyToken.role };
 		const accessToken = await generateAccessToken(payload);
 		const refreshToken = await generateRefreshToken(payload);
 
 		return res.status(200).json({
 			status: true,
-			message: "ACCESS_TOKEN_SUCCESS",
+			message: "REFRESH_TOKEN_SUCCESS",
 			accessToken,
 			refreshToken,
 		});
 	} catch (err) {
-		if (!err.code) {
-			err.code = 500;
+		if (err.message == "jwt expired") {
+			err.message = "REFRESH_TOKEN_EXPIRED";
+		} else {
+			err.message = "REFRESH_TOKEN_INVALID";
 		}
 		return res.status(err.code).json({
 			status: false,
@@ -174,4 +173,4 @@ const accessToken = async (req, res) => {
 	}
 };
 
-export { register, login, accessToken, checkEmail };
+export { register, login, refreshToken, checkEmail };
